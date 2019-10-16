@@ -52,12 +52,16 @@
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
 #include <QCoreApplication>
+#include <QTimer>
 #include <math.h>
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent),
       m_program(nullptr)
 {
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
+    m_timer->start(10);
 }
 
 GLWidget::~GLWidget()
@@ -104,6 +108,8 @@ void GLWidget::initializeGL()
     if (!m_program->bind())
         close();
 
+    m_colorLoc = m_program->uniformLocation("ourColor");
+
     m_vao.create();
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
 
@@ -135,18 +141,25 @@ void GLWidget::setupVertexAttribs()
 
 void GLWidget::paintGL()
 {
+    static int frame = 0;
     const qreal retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    float uniformValue = fabs(sin(frame / 100.f));
+
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
     m_program->bind();
 
+    m_program->setUniformValue(m_colorLoc, QVector4D(0.f, uniformValue, 0.f, 1.f));
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     m_program->release();
+    ++frame;
+
+    qDebug() << frame;
 }
 
 void GLWidget::resizeGL(int w, int h)

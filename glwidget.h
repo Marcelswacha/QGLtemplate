@@ -57,6 +57,8 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 
+class QTimer;
+
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
@@ -86,6 +88,10 @@ private:
     QOpenGLVertexArrayObject m_vao;
     QOpenGLBuffer m_vbo;
     QOpenGLShaderProgram *m_program;
+
+    QTimer* m_timer;
+
+    int m_colorLoc;
 
 };
 
