@@ -58,6 +58,7 @@
 #include <QMatrix4x4>
 
 class QTimer;
+class QOpenGLTexture;
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -86,7 +87,9 @@ private:
     void setupVertexAttribs();
 
     QOpenGLVertexArrayObject m_vao;
-    QOpenGLBuffer m_vbo;
+    GLuint m_vbo;
+    GLuint m_ebo;
+    QOpenGLTexture * m_texture;
     QOpenGLShaderProgram *m_program;
 
     QTimer* m_timer;

@@ -13,4 +13,5 @@ target.path = $$[QT_INSTALL_EXAMPLES]/opengl/qgltemplate
 INSTALLS += target
 
 RESOURCES += \
-    shaders.qrc
+    shaders.qrc \
+    textures.qrc

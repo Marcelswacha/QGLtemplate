@@ -1,6 +1,9 @@
 #version 460 core
-uniform vec4 ourColor;
+in vec3 color;
+in vec2 textureCoord;
+
+uniform sampler2D texture1;
 void main()
 {
-gl_FragColor = ourColor;
+gl_FragColor = texture(texture1, textureCoord);
 }

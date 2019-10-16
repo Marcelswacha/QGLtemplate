@@ -49,15 +49,19 @@
 ****************************************************************************/
 
 #include "glwidget.h"
+
 #include <QMouseEvent>
-#include <QOpenGLShaderProgram>
 #include <QCoreApplication>
 #include <QTimer>
+
+#include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
+
 #include <math.h>
 
 GLWidget::GLWidget(QWidget *parent)
-    : QOpenGLWidget(parent),
-      m_program(nullptr)
+    : QOpenGLWidget(parent)
+    ,  m_program(nullptr)
 {
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -82,7 +86,8 @@ QSize GLWidget::sizeHint() const
 void GLWidget::cleanup()
 {
     makeCurrent();
-    m_vbo.destroy();
+    glDeleteBuffers(1, &m_vbo);
+    glDeleteBuffers(1, &m_ebo);
     delete m_program;
     m_program = 0;
     doneCurrent();
@@ -114,15 +119,28 @@ void GLWidget::initializeGL()
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
 
     // Setup our vertex buffer object.
-    static const GLfloat vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+    GLfloat vertices[] = {
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
     };
-    m_vbo.create();
-    m_vbo.bind();
-    m_vbo.allocate(vertices, 9 * sizeof(GLfloat));
 
+    GLuint indices[] = {
+       0, 1, 3, // first triangle
+       1, 2, 3  // second triangle
+   };
+
+    glGenBuffers(1, &m_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glGenBuffers(1, &m_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    m_texture = new QOpenGLTexture(QImage(QString(":/textures/container.jpg")).mirrored(true, true));
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
 
@@ -131,12 +149,20 @@ void GLWidget::initializeGL()
 
 void GLWidget::setupVertexAttribs()
 {
-    m_vbo.bind();
-    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-    f->glEnableVertexAttribArray(0);
-    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), 0);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
-    m_vbo.release();
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+
+    f->glEnableVertexAttribArray(0);
+    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+
+    f->glEnableVertexAttribArray(1);
+    f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+
+    f->glEnableVertexAttribArray(2);
+    f->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void GLWidget::paintGL()
@@ -153,8 +179,10 @@ void GLWidget::paintGL()
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
     m_program->bind();
 
-    m_program->setUniformValue(m_colorLoc, QVector4D(0.f, uniformValue, 0.f, 1.f));
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    m_program->setUniformValue("texture1", 0);
+    m_texture->bind();
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     m_program->release();
     ++frame;
