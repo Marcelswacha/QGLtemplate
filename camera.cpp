@@ -5,95 +5,105 @@
 
 Camera::Camera(QObject *parent) : QObject(parent)
 {
-
 }
 
 void Camera::onForwardKeyChanged()
 {
-    goingForward = !goingForward;
+    _goingForward = !_goingForward;
 }
 
 void Camera::onBackwardKeyChanged()
 {
-    goingBackward = !goingBackward;
+    _goingBackward = !_goingBackward;
 }
 
 void Camera::onLeftKeyChanged()
 {
-    goingLeft = !goingLeft;
+    _goingLeft = !_goingLeft;
 }
 
 void Camera::onRightKeyChanged()
 {
-    goingRight = !goingRight;
+    _goingRight = !_goingRight;
+}
+
+void Camera::onScroll(double delta)
+{
+    _fov += delta / -20.0;
+    if (_fov < 1.0) {
+        _fov = 1.0;
+    }
+    if (_fov > 120.0) {
+        _fov = 120;
+    }
 }
 
 void Camera::update()
 {
     float velocity = 0.15f;
-    if (goingForward) {
-        pos += front * velocity;
+    if (_goingForward) {
+        _pos += _front * velocity;
     }
-    if (goingBackward) {
-        pos -= front * velocity;
+    if (_goingBackward) {
+        _pos -= _front * velocity;
     }
-    if (goingLeft) {
-        pos -= right * velocity;
+    if (_goingLeft) {
+        _pos -= _right * velocity;
     }
-    if (goingRight) {
-        pos += right * velocity;
+    if (_goingRight) {
+        _pos += _right * velocity;
     }
 }
 
 QMatrix4x4 Camera::view()
 {
     QMatrix4x4 v;
-    v.lookAt(pos, pos + front, up);
+    v.lookAt(_pos, _pos + _front, _up);
 
     return v;
 }
 
 void Camera::mousePress(double x, double y)
 {
-    isMousePressed = true;
-    lastX = x;
-    lastY = y;
+    _isMousePressed = true;
+    _lastX = x;
+    _lastY = y;
 }
 
 void Camera::mouseRelease()
 {
-    isMousePressed = false;
+    _isMousePressed = false;
 }
 
 void Camera::mouseMove(double x, double y)
 {
-    if (!isMousePressed) {
+    if (!_isMousePressed) {
         return;
     }
 
-    double xoffset = x - lastX;
-    double yoffset = lastY - y;
-    lastX = x;
-    lastY = y;
+    double xoffset = x - _lastX;
+    double yoffset = _lastY - y;
+    _lastX = x;
+    _lastY = y;
 
     double sensitivity = 25.0;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    yaw   += xoffset;
-    pitch += yoffset;
+    _yaw   += xoffset;
+    _pitch += yoffset;
 
-    if(pitch > 89.0)
-        pitch = 89.0;
-    if(pitch < -89.0)
-        pitch = -89.0;
+    if(_pitch > 89.0)
+        _pitch = 89.0;
+    if(_pitch < -89.0)
+        _pitch = -89.0;
 
     QVector3D newFront;
-    newFront.setX( cos(qDegreesToRadians(yaw)) * cos(qDegreesToRadians(pitch)) );
-    newFront.setY( sin(qDegreesToRadians(pitch)) );
-    newFront.setZ( sin(qDegreesToRadians(yaw)) * cos(qDegreesToRadians(pitch)) );
+    newFront.setX( cos(qDegreesToRadians(_yaw)) * cos(qDegreesToRadians(_pitch)) );
+    newFront.setY( sin(qDegreesToRadians(_pitch)) );
+    newFront.setZ( sin(qDegreesToRadians(_yaw)) * cos(qDegreesToRadians(_pitch)) );
     newFront.normalize();
-    front = newFront;
+    _front = newFront;
 }
 
 

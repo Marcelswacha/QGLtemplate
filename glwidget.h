@@ -83,28 +83,25 @@ protected:
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int width, int height) override;
+
     void mousePressEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+
+    void wheelEvent(QWheelEvent* event) override;
+
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
 
 private:
-    void setupVertexAttribs();
+    QOpenGLTexture* _cubeTexture;
+    QOpenGLTexture* _floorTexture;
+    QOpenGLShaderProgram* _program;
 
-    QOpenGLVertexArrayObject m_vao;
-    GLuint m_vbo;
-    GLuint m_ebo;
-    QOpenGLTexture * m_texture;
-    QOpenGLShaderProgram *m_program;
+    Camera* _camera;
 
-    QTimer* m_timer;
-
-    int m_colorLoc;
-
-    Camera* m_camera;
-
+    QTimer* _timer;
 };
 
 #endif

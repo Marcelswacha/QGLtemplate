@@ -12,36 +12,41 @@ public:
     explicit Camera(QObject *parent = nullptr);
 
     QMatrix4x4 view();
-
-signals:
+    double fov() const { return _fov; }
+    QVector3D pos() const { return _pos; }
 
 public slots:
     void onForwardKeyChanged();
     void onBackwardKeyChanged();
     void onLeftKeyChanged();
     void onRightKeyChanged();
+
+    void onScroll(double delta);
+
     void mousePress(double x, double y);
     void mouseRelease();
     void mouseMove(double x, double y);
+
     void update();
 
 private:
-    QVector3D pos {0.f, 0.f, 10.f};
-    QVector3D front { 0.f, 0.f, -1.f};
-    QVector3D right {1.f, 0.f, 0.f};
-    QVector3D up {0.f, 1.f, 0.f};
+    QVector3D _pos {0.f, 5.f, 10.f};
+    QVector3D _front { 0.f, 0.f, -1.f};
+    QVector3D _right {1.f, 0.f, 0.f};
+    QVector3D _up {0.f, 1.f, 0.f};
+    double _fov {45.0};
 
-    bool goingForward {false};
-    bool goingBackward {false};
-    bool goingLeft {false};
-    bool goingRight {false};
+    bool _goingForward {false};
+    bool _goingBackward {false};
+    bool _goingLeft {false};
+    bool _goingRight {false};
 
-    bool isMousePressed {false};
-    double lastX;
-    double lastY;
+    bool _isMousePressed {false};
+    double _lastX;
+    double _lastY;
 
-    double yaw {-90.0};
-    double pitch {0.0};
+    double _yaw {-90.0};
+    double _pitch {0.0};
 
 };
 

@@ -3,5 +3,7 @@
         <file>textures/container.jpg</file>
         <file>textures/tex1.jpg</file>
         <file>textures/tex2.jpeg</file>
+        <file>textures/stone.jpg</file>
+        <file>textures/chest.jpg</file>
     </qresource>
 </RCC>
