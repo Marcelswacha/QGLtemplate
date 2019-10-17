@@ -66,6 +66,8 @@ GLWidget::GLWidget(QWidget *parent)
     m_timer = new QTimer(this);
     connect(m_timer, SIGNAL(timeout()), this, SLOT(update()));
     m_timer->start(10);
+
+    setFocusPolicy(Qt::ClickFocus);
 }
 
 GLWidget::~GLWidget()
@@ -99,6 +101,9 @@ void GLWidget::initializeGL()
 
     initializeOpenGLFunctions();
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
+
+    m_camera = new Camera(this);
 
     m_program = new QOpenGLShaderProgram;
     if (!m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertexshader.glsl"))
@@ -118,27 +123,62 @@ void GLWidget::initializeGL()
     m_vao.create();
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
 
-    // Setup our vertex buffer object.
-    GLfloat vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-    };
+    float vertices[] = {
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    GLuint indices[] = {
-       0, 1, 3, // first triangle
-       1, 2, 3  // second triangle
-   };
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+             0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+             0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        };
+
+//    GLuint indices[] = {
+//       0, 1, 3, // first triangle
+//       1, 2, 3  // second triangle
+//   };
 
     glGenBuffers(1, &m_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &m_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+//    glGenBuffers(1, &m_ebo);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     m_texture = new QOpenGLTexture(QImage(QString(":/textures/container.jpg")).mirrored(true, true));
     // Store the vertex attribute bindings for the program.
@@ -154,13 +194,10 @@ void GLWidget::setupVertexAttribs()
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
     f->glEnableVertexAttribArray(0);
-    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), 0);
+    f->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
 
     f->glEnableVertexAttribArray(1);
-    f->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-    f->glEnableVertexAttribArray(2);
-    f->glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (void*)(6 * sizeof(GLfloat)));
+    f->glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -172,22 +209,63 @@ void GLWidget::paintGL()
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float uniformValue = fabs(sin(frame / 100.f));
+
+    static const QVector3D cubePositions[] = {
+      QVector3D( 0.0f,  0.0f,  0.0f),
+      QVector3D( 0.0f,  4.0f, .0f),
+//      QVector3D(-1.5f, 2.2f, -2.5f),
+//      QVector3D(-3.8f, 2.0f, -12.3f),
+//      QVector3D( 2.4f, 0.4f, -3.5f),
+//      QVector3D(-1.7f,  3.0f, -7.5f),
+//      QVector3D( 1.3f, 2.0f, -2.5f),
+//      QVector3D( -1.5f,  2.0f, -2.5f),
+//      QVector3D( 1.5f,  0.2f, -1.5f),
+//      QVector3D(-1.3f,  1.0f, -1.5f)
+    };
+
+
+//    QVector3D eye(0, 25, 9);
+//    QVector3D target(0, 0, 0);
+//    QVector3D cameraDir = eye - target; cameraDir.normalize();
+//    QVector3D up(0, 1, 0);
+//    QVector3D cameraRight = QVector3D::crossProduct(up, cameraDir); cameraRight.normalize();
+//    QVector3D cameraUp = QVector3D::crossProduct(cameraDir, cameraRight); cameraUp.normalize();
+
+    m_camera->update();
+
+    QMatrix4x4 view = m_camera->view();
+
+    QMatrix4x4 proj;
+    proj.perspective(45.f, width() / height(), 0.1f, 100.f);
+
 
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
     m_program->bind();
 
+
+    m_program->setUniformValue("view", view);
+    m_program->setUniformValue("projection", proj);
     m_program->setUniformValue("texture1", 0);
     m_texture->bind();
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    for (int i = 0; i < 2; ++i) {
+        QMatrix4x4 model;
+        model.translate(cubePositions[i]);
+        float angle = (i + 1) * frame;
+        model.rotate(angle, 1.0, 0.3, 0.5);
+        m_program->setUniformValue("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    }
+
+
+
+    //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     m_program->release();
     ++frame;
-
-    qDebug() << frame;
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -196,12 +274,69 @@ void GLWidget::resizeGL(int w, int h)
     glViewport(0, 0, w * retinaScale, h * retinaScale);
 }
 
-void GLWidget::mousePressEvent(QMouseEvent */*event*/)
+void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    double x = event->pos().x() /(double) width();
+    double y = event->pos().y() / (double)height();
 
+    m_camera->mousePress(x, y);
 }
 
-void GLWidget::mouseMoveEvent(QMouseEvent */*event*/)
+void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
+    m_camera->mouseRelease();
+}
 
+void GLWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    double x = event->pos().x() / (double)width();
+    double y = event->pos().y() / (double)height();
+
+    m_camera->mouseMove(x, y);
+}
+
+void GLWidget::keyPressEvent(QKeyEvent *event)
+{
+    auto key = event->key();
+    if (key == Qt::Key_W) {
+        m_camera->onForwardKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_S) {
+        m_camera->onBackwardKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_A) {
+        m_camera->onLeftKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_D) {
+        m_camera->onRightKeyChanged();
+        return;
+    }
+
+    QWidget::keyPressEvent(event);
+}
+
+void GLWidget::keyReleaseEvent(QKeyEvent *event)
+{
+    auto key = event->key();
+    if (key == Qt::Key_W) {
+        m_camera->onForwardKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_S) {
+        m_camera->onBackwardKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_A) {
+        m_camera->onLeftKeyChanged();
+        return;
+    }
+    if (key == Qt::Key_D) {
+        m_camera->onRightKeyChanged();
+        return;
+    }
+
+    QWidget::keyReleaseEvent(event);
 }

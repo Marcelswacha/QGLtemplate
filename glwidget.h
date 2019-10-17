@@ -51,11 +51,14 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
+#include "camera.h"
+
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
+#include <QKeyEvent>
 
 class QTimer;
 class QOpenGLTexture;
@@ -81,7 +84,11 @@ protected:
     void paintGL() override;
     void resizeGL(int width, int height) override;
     void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
+
 
 private:
     void setupVertexAttribs();
@@ -95,6 +102,8 @@ private:
     QTimer* m_timer;
 
     int m_colorLoc;
+
+    Camera* m_camera;
 
 };
 
