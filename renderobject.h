@@ -22,13 +22,13 @@ struct RenderInfo
 
 struct RenderObject : protected QOpenGLFunctions
 {
-  QOpenGLShaderProgram* program;
-  QOpenGLTexture* texture;
+  QOpenGLShaderProgram* _program;
+  QOpenGLTexture* _texture;
   QOpenGLVertexArrayObject vertexArrayObject;
 
   RenderObject(QOpenGLShaderProgram* p, QOpenGLTexture* t)
-    : program(p)
-    , texture(t)
+    : _program(p)
+    , _texture(t)
   {
       initializeOpenGLFunctions();
   }

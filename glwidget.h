@@ -51,17 +51,17 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-#include "camera.h"
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 #include <QMatrix4x4>
 #include <QKeyEvent>
 
 class QTimer;
 class QOpenGLTexture;
+
+class Camera;
+class LightSource;
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -93,13 +93,18 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
     void keyReleaseEvent(QKeyEvent *event) override;
 
-
 private:
     QOpenGLTexture* _cubeTexture;
     QOpenGLTexture* _floorTexture;
-    QOpenGLShaderProgram* _program;
+    QOpenGLTexture* _footballTexture;
+    QOpenGLShaderProgram* _cubeProgram;
+    QOpenGLShaderProgram* _lightProgram;
 
     Camera* _camera;
+    LightSource* _lightSource;
+
+    QOpenGLShaderProgram* createProgram(const char* vsPath, const char* fsPath);
+
 
     QTimer* _timer;
 };

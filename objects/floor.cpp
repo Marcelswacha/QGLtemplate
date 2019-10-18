@@ -45,24 +45,24 @@ Floor::Floor(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
 
 void Floor::draw(const RenderInfo& info)
 {
-  program->bind();
-  texture->bind();
-  program->setUniformValue("texture1", 0);
+  _program->bind();
+  _texture->bind();
+  _program->setUniformValue("texture1", 0);
 
   QMatrix4x4 model;
   model.translate(_position);
   model.scale(30, 1, 30);
   model.rotate(90, 1, 0, 0);
 
-  program->setUniformValue("model", model);
-  program->setUniformValue("view", info.viewMatrix);
-  program->setUniformValue("projection", info.projectionMatrix);
-  program->setUniformValue("lightColor", info.ligthColor);
-  program->setUniformValue("lightPos", info.lightPos);
-  program->setUniformValue("cameraPos", info.cameraPos);
+  _program->setUniformValue("model", model);
+  _program->setUniformValue("view", info.viewMatrix);
+  _program->setUniformValue("projection", info.projectionMatrix);
+  _program->setUniformValue("lightColor", info.ligthColor);
+  _program->setUniformValue("lightPos", info.lightPos);
+  _program->setUniformValue("cameraPos", info.cameraPos);
 
   QOpenGLVertexArrayObject::Binder binder(&vertexArrayObject);
   glDrawArrays(GL_TRIANGLES, 0, 36);
 
-  program->release();
+  _program->release();
 }

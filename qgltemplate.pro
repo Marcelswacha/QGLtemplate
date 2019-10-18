@@ -4,14 +4,18 @@ HEADERS       = glwidget.h \
     camera.h \
     renderobject.h \
     objects/cube.h \
-    objects/floor.h
+    objects/floor.h \
+    objects/lightsource.h \
+    objects/sphere.h
 SOURCES       = glwidget.cpp \
                 main.cpp \
                 window.cpp \
                 mainwindow.cpp \
     camera.cpp \
     objects/cube.cpp \
-    objects/floor.cpp
+    objects/floor.cpp \
+    objects/lightsource.cpp \
+    objects/sphere.cpp
 
 QT           += widgets
 

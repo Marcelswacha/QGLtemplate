@@ -52,9 +52,13 @@
 
 #include "objects/cube.h"
 #include "objects/floor.h"
+#include "objects/lightsource.h"
+#include "objects/sphere.h"
 
-#include <QMouseEvent>
+#include "camera.h"
+
 #include <QCoreApplication>
+#include <QMouseEvent>
 #include <QTimer>
 
 #include <QOpenGLShaderProgram>
@@ -64,7 +68,8 @@
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    ,  _program(nullptr)
+    , _cubeProgram(nullptr)
+    , _lightProgram(nullptr)
 {
     _timer = new QTimer(this);
     connect(_timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -92,8 +97,13 @@ void GLWidget::cleanup()
 {
     makeCurrent();
 
-    delete _program;
-    _program = 0;
+    delete _lightSource;
+
+    delete _cubeProgram;
+    _cubeProgram = nullptr;
+
+    delete _lightProgram;
+    _lightProgram = nullptr;
 
     doneCurrent();
 }
@@ -106,24 +116,29 @@ void GLWidget::initializeGL()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
-    _camera = new Camera(this);
-
-    _program = new QOpenGLShaderProgram;
-    if (!_program->addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/vertexshader.glsl"))
+    // Shaders
+    _cubeProgram = createProgram(":/shaders/vertexshader.glsl", ":/shaders/fragmentshader.glsl");
+    if (_cubeProgram == nullptr) {
         close();
+    }
 
-    if (!_program->addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/fragmentshader.glsl"))
+    _lightProgram = createProgram(":/shaders/lightvs.glsl", ":/shaders/lightfs.glsl");
+    if (_lightProgram == nullptr) {
         close();
+    }
 
-    if (!_program->link())
-        close();
 
-    if (!_program->bind())
-        close();
-
+    // Textures
     _cubeTexture = new QOpenGLTexture(QImage(QString(":/textures/chest.jpg")));
     _floorTexture = new QOpenGLTexture(QImage(QString(":/textures/stone.jpg")));
+    _footballTexture = new QOpenGLTexture(QImage(QString(":/textures/football1.jpg")));
 
+    // Scene
+    // camera
+    _camera = new Camera(this);
+
+    // lights
+    _lightSource = new LightSource(_lightProgram, nullptr, QVector3D(3,3,3), QVector3D(1, 1, 1));
 }
 
 void GLWidget::paintGL()
@@ -134,7 +149,6 @@ void GLWidget::paintGL()
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 
     static const QVector3D cubePositions[] = {
       QVector3D( 0.0f,  0.0f,  0.0f),
@@ -149,7 +163,6 @@ void GLWidget::paintGL()
       QVector3D(-1.3f,  1.0f, -1.5f)
     };
 
-
     _camera->update();
 
     QMatrix4x4 proj;
@@ -157,15 +170,18 @@ void GLWidget::paintGL()
 
     RenderInfo info;
     info.cameraPos = _camera->pos();
-    info.lightPos = QVector3D(0,6,6);
-    info.ligthColor = QVector3D(1,1,1);
+    info.lightPos = _lightSource->pos();
+    info.ligthColor = _lightSource->color();
     info.projectionMatrix = proj;
     info.viewMatrix = _camera->view();
 
-    Floor f(_program, _floorTexture, QVector3D(0,-10,0));
+    Floor f(_cubeProgram, _floorTexture, QVector3D(0,-10,0));
     f.draw(info);
+    _lightSource->draw(info);
        for (int i = 0; i < 10; ++i) {
-        Cube c(_program, _cubeTexture, cubePositions[i]);
+        Cube c(_cubeProgram, _cubeTexture, cubePositions[i]);
+        Sphere s(_cubeProgram, _footballTexture, cubePositions[i] + QVector3D(1, 1, 1));
+        s.draw(info);
         c.draw(info);
     }
 
@@ -248,4 +264,24 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
     }
 
     QWidget::keyReleaseEvent(event);
+}
+
+QOpenGLShaderProgram *GLWidget::createProgram(const char *vsPath, const char *fsPath)
+{
+    QOpenGLShaderProgram* program = new QOpenGLShaderProgram;
+    if (!program->addShaderFromSourceFile(QOpenGLShader::Vertex, vsPath))
+        return nullptr;
+
+    if (!program->addShaderFromSourceFile(QOpenGLShader::Fragment, fsPath))
+        return nullptr;
+
+    if (!program->link())
+        return nullptr;
+
+    if (!program->bind())
+        return nullptr;
+
+    program->release();
+
+    return program;
 }
