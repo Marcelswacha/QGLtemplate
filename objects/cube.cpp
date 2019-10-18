@@ -48,8 +48,7 @@ float cubeVertices[] = {
 };
 
 Cube::Cube(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
-  : RenderObject(p, t)
-  , _position(pos)
+  : RenderObject(p, t, pos)
 {
   // generate and bind VAO
   vertexArrayObject.create();

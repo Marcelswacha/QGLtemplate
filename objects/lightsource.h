@@ -19,7 +19,6 @@ public:
   QVector3D color() const { return _color; }
 
 protected:
-  QVector3D _position;
   QVector3D _color;
 };
 

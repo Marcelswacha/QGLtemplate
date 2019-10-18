@@ -26,9 +26,13 @@ struct RenderObject : protected QOpenGLFunctions
   QOpenGLTexture* _texture;
   QOpenGLVertexArrayObject vertexArrayObject;
 
-  RenderObject(QOpenGLShaderProgram* p, QOpenGLTexture* t)
+  QVector3D _position {0.f, 0.f, 0.f};
+  QVector3D _velocity {0.f, 0.f, 0.f};
+
+  RenderObject(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
     : _program(p)
     , _texture(t)
+    , _position(pos)
   {
       initializeOpenGLFunctions();
   }

@@ -11,9 +11,7 @@ public:
   Sphere(QOpenGLShaderProgram* s, QOpenGLTexture* t, const QVector3D& pos);
 
   void draw(const RenderInfo&) override;
-
-protected:
-  QVector3D _position;
+  void update() override;
 };
 
 #endif // SPHERE_H

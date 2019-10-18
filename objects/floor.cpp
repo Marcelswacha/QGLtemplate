@@ -14,8 +14,7 @@ float floorVertices[] = {
 };
 
 Floor::Floor(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
-  : RenderObject(p, t)
-  , _position(pos)
+  : RenderObject(p, t, pos)
 {
   // generate and bind VAO
   vertexArrayObject.create();

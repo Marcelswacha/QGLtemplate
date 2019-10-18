@@ -64,11 +64,12 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
-#include <math.h>
+#include <cmath>
+#include <random>
 
 GLWidget::GLWidget(QWidget *parent)
     : QOpenGLWidget(parent)
-    , _cubeProgram(nullptr)
+    , _objectProgram(nullptr)
     , _lightProgram(nullptr)
 {
     _timer = new QTimer(this);
@@ -99,8 +100,8 @@ void GLWidget::cleanup()
 
     delete _lightSource;
 
-    delete _cubeProgram;
-    _cubeProgram = nullptr;
+    delete _objectProgram;
+    _objectProgram = nullptr;
 
     delete _lightProgram;
     _lightProgram = nullptr;
@@ -117,8 +118,8 @@ void GLWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
 
     // Shaders
-    _cubeProgram = createProgram(":/shaders/vertexshader.glsl", ":/shaders/fragmentshader.glsl");
-    if (_cubeProgram == nullptr) {
+    _objectProgram = createProgram(":/shaders/vertexshader.glsl", ":/shaders/fragmentshader.glsl");
+    if (_objectProgram == nullptr) {
         close();
     }
 
@@ -139,6 +140,23 @@ void GLWidget::initializeGL()
 
     // lights
     _lightSource = new LightSource(_lightProgram, nullptr, QVector3D(3,3,3), QVector3D(1, 1, 1));
+
+    static const QVector3D positions[] = {
+      QVector3D( 0.0f,  1.5f,  -10.0f),
+      QVector3D( 0.0f,  51.0f, .0f),
+      QVector3D(-1.5f, 31.2f, -2.5f),
+      QVector3D(-3.8f, 31.0f, -12.3f),
+      QVector3D( 2.4f, 11.4f, -3.5f),
+      QVector3D(-1.7f,  41.0f, -7.5f),
+      QVector3D( 1.3f, 31.0f, -2.5f),
+      QVector3D( -1.5f,  31.0f, -2.5f),
+      QVector3D( 1.5f,  11.2f, -1.5f),
+      QVector3D(-1.3f,  21.0f, -1.5f)
+    };
+
+    for (int i = 0; i < 10; ++i) {
+        _objects.push_back(new Sphere(_objectProgram, _footballTexture, positions[i]));
+    }
 }
 
 void GLWidget::paintGL()
@@ -149,19 +167,6 @@ void GLWidget::paintGL()
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    static const QVector3D cubePositions[] = {
-      QVector3D( 0.0f,  0.0f,  0.0f),
-      QVector3D( 0.0f,  4.0f, .0f),
-      QVector3D(-1.5f, 2.2f, -2.5f),
-      QVector3D(-3.8f, 2.0f, -12.3f),
-      QVector3D( 2.4f, 0.4f, -3.5f),
-      QVector3D(-1.7f,  3.0f, -7.5f),
-      QVector3D( 1.3f, 2.0f, -2.5f),
-      QVector3D( -1.5f,  2.0f, -2.5f),
-      QVector3D( 1.5f,  0.2f, -1.5f),
-      QVector3D(-1.3f,  1.0f, -1.5f)
-    };
 
     _camera->update();
 
@@ -175,14 +180,11 @@ void GLWidget::paintGL()
     info.projectionMatrix = proj;
     info.viewMatrix = _camera->view();
 
-    Floor f(_cubeProgram, _floorTexture, QVector3D(0,-10,0));
+    Floor f(_objectProgram, _floorTexture, QVector3D(0,-0.5,0));
     f.draw(info);
-    _lightSource->draw(info);
-       for (int i = 0; i < 10; ++i) {
-        Cube c(_cubeProgram, _cubeTexture, cubePositions[i]);
-        Sphere s(_cubeProgram, _footballTexture, cubePositions[i] + QVector3D(1, 1, 1));
-        s.draw(info);
-        c.draw(info);
+    for (int i = 0; i < _objects.size(); ++i) {
+       _objects[i]->update();
+       _objects[i]->draw(info);
     }
 
     ++frame;
@@ -199,7 +201,29 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     double x = event->pos().x() /(double) width();
     double y = event->pos().y() / (double)height();
 
-    _camera->mousePress(x, y);
+    if (event->buttons() & Qt::MiddleButton) {
+      _camera->mousePress(x, y);
+    }
+    else if (event->buttons() & Qt::LeftButton) {
+        generateNewObject();
+    }
+}
+
+void GLWidget::generateNewObject()
+{
+    std::random_device dev;
+    std::mt19937 rng(dev());
+    std::uniform_int_distribution<std::mt19937::result_type> distx(-10,10);
+    std::uniform_int_distribution<std::mt19937::result_type> disty(3,20);
+    std::uniform_int_distribution<std::mt19937::result_type> distz(-10, 10);
+
+    int x = distx(rng);
+    int y = disty(rng);
+    int z = distz(rng);
+
+    qDebug() << x << y << z;
+
+    _objects.push_back(new Sphere(_objectProgram, _footballTexture, QVector3D(x, y, z)));
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent */*event*/)

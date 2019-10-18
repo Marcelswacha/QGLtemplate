@@ -62,6 +62,7 @@ class QOpenGLTexture;
 
 class Camera;
 class LightSource;
+class RenderObject;
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -97,13 +98,15 @@ private:
     QOpenGLTexture* _cubeTexture;
     QOpenGLTexture* _floorTexture;
     QOpenGLTexture* _footballTexture;
-    QOpenGLShaderProgram* _cubeProgram;
+    QOpenGLShaderProgram* _objectProgram;
     QOpenGLShaderProgram* _lightProgram;
 
     Camera* _camera;
     LightSource* _lightSource;
+    QVector<RenderObject*> _objects;
 
     QOpenGLShaderProgram* createProgram(const char* vsPath, const char* fsPath);
+    void generateNewObject();
 
 
     QTimer* _timer;

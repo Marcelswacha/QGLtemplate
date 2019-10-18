@@ -1194,8 +1194,7 @@ static const float sphereV [] = {
 };
 
 Sphere::Sphere(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
-  : RenderObject(p, t)
-  , _position(pos)
+  : RenderObject(p, t, pos)
 {
   // generate and bind VAO
   vertexArrayObject.create();
@@ -1243,4 +1242,35 @@ void Sphere::draw(const RenderInfo& info)
   glDrawArrays(GL_TRIANGLES, 0, 1188);
 
   _program->release();
+}
+
+void Sphere::update()
+{
+    static const float delta = 0.05f;
+    static const QVector3D g_acc(0, -9.81, 0);
+    static const float v_eps = 0.005f;
+
+    if (_position.y() <= 1.0 && _velocity.y() == 0.f) {
+        //stop
+//        _position.setY(1.0f);
+//        _velocity.setY(0.f);
+        return;
+    }
+
+    _position += _velocity * delta + g_acc * delta * delta / 2;
+    _velocity += g_acc * delta;
+
+    if (_position.y() <= 1.05 && _velocity.y() < 0.f) {
+        _velocity *= -1.f / 1.21;
+        _position.setY(1.0);
+        if (_velocity.y() <= v_eps) {
+            _velocity.setY(0.f);
+        }
+    }
+
+//    if (_position.y() <= 1.0 && abs(_velocity.y()) <= v_eps) {
+//        //stop
+//        _position.setY(1.0f);
+//        _velocity.setY(0.f);
+//    }
 }

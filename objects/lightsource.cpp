@@ -1,8 +1,7 @@
 #include "lightsource.h"
 
 LightSource::LightSource(QOpenGLShaderProgram *p, QOpenGLTexture *t, const QVector3D &pos, const QVector3D &color)
-    : RenderObject(p, t)
-    , _position(pos)
+    : RenderObject(p, t, pos)
     , _color(color)
 {
     // generate and bind VAO
