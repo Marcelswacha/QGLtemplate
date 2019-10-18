@@ -86,7 +86,7 @@ void Camera::mouseMove(double x, double y)
     _lastX = x;
     _lastY = y;
 
-    double sensitivity = 25.0;
+    double sensitivity = 125.0;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
@@ -98,12 +98,19 @@ void Camera::mouseMove(double x, double y)
     if(_pitch < -89.0)
         _pitch = -89.0;
 
+    // update camera vectors
     QVector3D newFront;
     newFront.setX( cos(qDegreesToRadians(_yaw)) * cos(qDegreesToRadians(_pitch)) );
     newFront.setY( sin(qDegreesToRadians(_pitch)) );
     newFront.setZ( sin(qDegreesToRadians(_yaw)) * cos(qDegreesToRadians(_pitch)) );
     newFront.normalize();
     _front = newFront;
+
+    _right = QVector3D::crossProduct(_front, QVector3D(0, 1, 0));
+    _right.normalize();
+
+    _up = QVector3D::crossProduct(_right, _front);
+    _up.normalize();
 }
 
 
