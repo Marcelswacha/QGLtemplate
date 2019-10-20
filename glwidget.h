@@ -51,7 +51,6 @@
 #ifndef GLWIDGET_H
 #define GLWIDGET_H
 
-
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QMatrix4x4>
@@ -63,6 +62,7 @@ class QOpenGLTexture;
 class Camera;
 class LightSource;
 class RenderObject;
+class Shader;
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -105,7 +105,6 @@ private:
     LightSource* _lightSource;
     QVector<RenderObject*> _objects;
 
-    QOpenGLShaderProgram* createProgram(const char* vsPath, const char* fsPath);
     void generateNewObject();
 
 

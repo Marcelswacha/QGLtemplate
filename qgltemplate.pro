@@ -1,4 +1,7 @@
 HEADERS       = glwidget.h \
+  shader.h \
+  shaders/adsshader.h \
+  shaders/basicshader.h \
                 window.h \
                 mainwindow.h \
     camera.h \
@@ -9,6 +12,9 @@ HEADERS       = glwidget.h \
     objects/sphere.h
 SOURCES       = glwidget.cpp \
                 main.cpp \
+  shader.cpp \
+  shaders/adsshader.cpp \
+  shaders/basicshader.cpp \
                 window.cpp \
                 mainwindow.cpp \
     camera.cpp \
