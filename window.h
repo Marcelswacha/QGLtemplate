@@ -14,8 +14,8 @@ class Window : public QWidget
 public:
     Window(QWidget *parent);
 
-protected:
-    void keyPressEvent(QKeyEvent *event) override;
+public slots:
+    void onSliderChange();
 
 private:
     QSlider *createSlider();

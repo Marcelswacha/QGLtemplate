@@ -119,5 +119,3 @@ void Camera::mouseMove(double x, double y)
     _up = QVector3D::crossProduct(_right, _front);
     _up.normalize();
 }
-
-

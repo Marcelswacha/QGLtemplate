@@ -16,6 +16,7 @@ public:
 
   QVector3D pos() const { return _position; }
   QVector3D color() const { return _color; }
+  void setColor(const QVector3D& color) { _color = color; }
 
 protected:
   QVector3D _color;

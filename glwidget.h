@@ -31,6 +31,7 @@ public:
 
 public slots:
     void cleanup();
+    void setLightColor(float r, float g, float b);
 
 protected:
     void initializeGL() override;

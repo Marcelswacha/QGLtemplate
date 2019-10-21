@@ -57,12 +57,19 @@ void GLWidget::cleanup()
     doneCurrent();
 }
 
+void GLWidget::setLightColor(float r, float g, float b)
+{
+    QVector3D color(r, g, b);
+    _lightSource->setColor(color);
+    updateLights();
+}
+
 void GLWidget::initializeGL()
 {
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &GLWidget::cleanup);
 
     initializeOpenGLFunctions();
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
     // Shaders
@@ -92,7 +99,7 @@ void GLWidget::initializeGL()
     _cameraOptions = new ShaderCameraOptions{_camera->pos(), _camera->projection(devicePixelRatio()), _camera->view() };
 
     // lights
-    _lightSource = new LightSource(_lightProgram, nullptr, _cubeShape, QVector3D(3,3,3), QVector3D(1, 1, 1));
+    _lightSource = new LightSource(_lightProgram, nullptr, _sphereShape, QVector3D(3,15,3), QVector3D(1, 1, 1));
     _lightOptions = new ShaderLightOptions{_lightSource->pos(), _lightSource->color()};
 
     // floor
@@ -124,7 +131,7 @@ void GLWidget::paintGL()
     const qreal retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0.f, 0.f, 0.f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     updateCamera();
