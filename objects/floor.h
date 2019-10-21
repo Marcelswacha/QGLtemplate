@@ -1,16 +1,14 @@
 #ifndef FLOOR_H
 #define FLOOR_H
 
-#include "renderobject.h"
+#include "shape.h"
 
-class QOpenGLTexture;
-
-class Floor : public RenderObject
+class Floor : public Shape
 {
 public:
-  Floor(QOpenGLShaderProgram* s, QOpenGLTexture* t, const QVector3D& pos);
+  Floor();
 
-  void draw(const RenderInfo&) override;
+  void draw() override;
 };
 
 #endif // FLOOR_H

@@ -1,17 +1,14 @@
 #ifndef SPHERE_H
 #define SPHERE_H
 
-#include "renderobject.h"
+#include "shape.h"
 
-class QOpenGLTexture;
-
-class Sphere : public RenderObject
+class Sphere : public Shape
 {
 public:
-  Sphere(QOpenGLShaderProgram* s, QOpenGLTexture* t, const QVector3D& pos);
+  Sphere();
 
-  void draw(const RenderInfo&) override;
-  void update() override;
+  void draw() override;
 };
 
 #endif // SPHERE_H

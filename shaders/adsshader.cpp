@@ -1,7 +1,7 @@
 #include "adsshader.h"
 
 static const char* basicShaderVSPath = ":/shaders/vertexshader.glsl";
-static const char* basicShaderFSPath = ":/shaders/fragmentShader.glsl";
+static const char* basicShaderFSPath = ":/shaders/fragmentshader.glsl";
 
 ADSShader::ADSShader()
     : Shader(basicShaderVSPath,

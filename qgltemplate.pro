@@ -9,7 +9,9 @@ HEADERS       = glwidget.h \
     objects/cube.h \
     objects/floor.h \
     objects/lightsource.h \
-    objects/sphere.h
+    objects/sphere.h \
+    shape.h \
+    renderinfo.h
 SOURCES       = glwidget.cpp \
                 main.cpp \
   shader.cpp \
@@ -21,7 +23,9 @@ SOURCES       = glwidget.cpp \
     objects/cube.cpp \
     objects/floor.cpp \
     objects/lightsource.cpp \
-    objects/sphere.cpp
+    objects/sphere.cpp \
+    shape.cpp \
+    renderobject.cpp
 
 QT           += widgets
 

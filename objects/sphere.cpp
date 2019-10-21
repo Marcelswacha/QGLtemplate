@@ -1,7 +1,5 @@
 #include "sphere.h"
 
-#include <QOpenGLTexture>
-
 static const float sphereV [] = {
     2.94985e-07, 1.07366e-07, 1, 0.0555556, 0, 2.94985e-07, 1.07366e-07, 1,
     0.258819, 0, 0.965926, 0, 0.0833333, 0.258819, 0, 0.965926,
@@ -1193,17 +1191,14 @@ static const float sphereV [] = {
     0.258819, -3.24991e-07, -0.965926, 1, 0.916667, 0.258819, -3.24991e-07, -0.965926
 };
 
-Sphere::Sphere(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
-  : RenderObject(p, t, pos)
+Sphere::Sphere()
+  : Shape()
 {
-  // generate and bind VAO
-  vertexArrayObject.create();
-  QOpenGLVertexArrayObject::Binder binder(&vertexArrayObject);
+  // bind VAO
+  QOpenGLVertexArrayObject::Binder binder(&_vao);
 
-  // generate, bind and copy VBO
-  GLuint vbo;
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  // copy VBO
+  glBindBuffer(GL_ARRAY_BUFFER, _vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 1188*8, sphereV, GL_STATIC_DRAW);
 
   // set the vertex attributes pointers
@@ -1222,55 +1217,8 @@ Sphere::Sphere(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Sphere::draw(const RenderInfo& info)
+void Sphere::draw()
 {
-  _program->bind();
-  _texture->bind();
-  _program->setUniformValue("texture1", 0);
-
-  QMatrix4x4 model;
-  model.translate(_position);
-
-  _program->setUniformValue("model", model);
-  _program->setUniformValue("view", info.viewMatrix);
-  _program->setUniformValue("projection", info.projectionMatrix);
-  _program->setUniformValue("lightColor", info.ligthColor);
-  _program->setUniformValue("lightPos", info.lightPos);
-  _program->setUniformValue("cameraPos", info.cameraPos);
-
-  QOpenGLVertexArrayObject::Binder binder(&vertexArrayObject);
+  QOpenGLVertexArrayObject::Binder binder(&_vao);
   glDrawArrays(GL_TRIANGLES, 0, 1188);
-
-  _program->release();
-}
-
-void Sphere::update()
-{
-    static const float delta = 0.05f;
-    static const QVector3D g_acc(0, -9.81, 0);
-    static const float v_eps = 0.005f;
-
-    if (_position.y() <= 1.0 && _velocity.y() == 0.f) {
-        //stop
-//        _position.setY(1.0f);
-//        _velocity.setY(0.f);
-        return;
-    }
-
-    _position += _velocity * delta + g_acc * delta * delta / 2;
-    _velocity += g_acc * delta;
-
-    if (_position.y() <= 1.05 && _velocity.y() < 0.f) {
-        _velocity *= -1.f / 1.21;
-        _position.setY(1.0);
-        if (_velocity.y() <= v_eps) {
-            _velocity.setY(0.f);
-        }
-    }
-
-//    if (_position.y() <= 1.0 && abs(_velocity.y()) <= v_eps) {
-//        //stop
-//        _position.setY(1.0f);
-//        _velocity.setY(0.f);
-//    }
 }

@@ -1,37 +1,20 @@
 #ifndef RENDEROBJECT_H
 #define RENDEROBJECT_H
 
-#include <QVector3D>
-#include <QMatrix4x4>
+#include "renderinfo.h"
+#include "shader.h"
+#include "shape.h"
 
 #include <QOpenGLFunctions>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
 #include <QOpenGLTexture>
 
-struct RenderInfo
+class RenderObject : public QOpenGLFunctions
 {
-  QMatrix4x4 viewMatrix;
-  QMatrix4x4 projectionMatrix;
-
-  QVector3D ligthColor;
-  QVector3D lightPos;
-
-  QVector3D cameraPos;
-};
-
-struct RenderObject : protected QOpenGLFunctions
-{
-  QOpenGLShaderProgram* _program;
-  QOpenGLTexture* _texture;
-  QOpenGLVertexArrayObject vertexArrayObject;
-
-  QVector3D _position {0.f, 0.f, 0.f};
-  QVector3D _velocity {0.f, 0.f, 0.f};
-
-  RenderObject(QOpenGLShaderProgram* p, QOpenGLTexture* t, const QVector3D& pos)
+public:
+  RenderObject(Shader* p, QOpenGLTexture* t, Shape* s, const QVector3D& pos)
     : _program(p)
     , _texture(t)
+    , _shape(s)
     , _position(pos)
   {
       initializeOpenGLFunctions();
@@ -39,8 +22,16 @@ struct RenderObject : protected QOpenGLFunctions
 
   virtual ~RenderObject(){}
 
-  virtual void draw(const RenderInfo&) {}
-  virtual void update() {}
+  virtual void draw(const RenderInfo&);
+  virtual void update();
+
+protected:
+  Shader* _program;
+  QOpenGLTexture* _texture;
+  Shape* _shape;
+
+  QVector3D _position {0.f, 0.f, 0.f};
+  QVector3D _velocity {0.f, 0.f, 0.f};
 };
 
 #endif // RENDEROBJECT_H

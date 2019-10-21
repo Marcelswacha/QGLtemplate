@@ -1,16 +1,16 @@
 #ifndef CUBE_H
 #define CUBE_H
 
-#include "renderobject.h"
+#include "shape.h"
 
 class QOpenGLTexture;
 
-class Cube : public RenderObject
+class Cube : public Shape
 {
 public:
-  Cube(QOpenGLShaderProgram* s, QOpenGLTexture* t, const QVector3D& pos);
+  Cube();
 
-  void draw(const RenderInfo&) override;
+  void draw() override;
 };
 
 #endif // CUBE_H
