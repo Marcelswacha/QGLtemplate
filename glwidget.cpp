@@ -82,7 +82,7 @@ void GLWidget::initializeGL()
 
     // Textures
     _cubeTexture = new QOpenGLTexture(QImage(QString(":/textures/chest.jpg")));
-    _floorTexture = new QOpenGLTexture(QImage(QString(":/textures/stone.jpg")));
+    _floorTexture = new QOpenGLTexture(QImage(QString(":/textures/container.jpg")));
     _footballTexture = new QOpenGLTexture(QImage(QString(":/textures/football1.jpg")));
 
     // Shapes
@@ -99,7 +99,9 @@ void GLWidget::initializeGL()
     _lightSource = new LightSource(_lightProgram, nullptr, _cubeShape, QVector3D(3,3,3), QVector3D(1, 1, 1));
 
     // floor
-    _floor = new RenderObject(_objectProgram, _floorTexture, _floorShape, QVector3D(0, -0.5, 1));
+    _floor = new RenderObject(_objectProgram, _floorTexture, _floorShape, QVector3D(0, -0, 0));
+    _floor->setScale(30, 1, 30);
+    _floor->setRotation(-90, 1, 0, 0);
 
     static const QVector3D positions[] = {
       QVector3D( 0.0f,  1.5f,  -10.0f),

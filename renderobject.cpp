@@ -8,6 +8,8 @@ void RenderObject::draw(const RenderInfo& info)
 
     QMatrix4x4 model;
     model.translate(_position);
+    model.scale(_scale);
+    model.rotate(_rotationAngle, _rotationAxis.x(), _rotationAxis.y(), _rotationAxis.z());
 
     _program->bind();
     _program->updateSamplers();
@@ -50,4 +52,11 @@ void RenderObject::update()
             _velocity.setY(0.f);
         }
     }
+}
+
+void RenderObject::setVector3D(QVector3D &vec, float x, float y, float z)
+{
+    vec.setX(x);
+    vec.setY(y);
+    vec.setZ(z);
 }
