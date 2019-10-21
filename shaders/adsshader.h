@@ -8,8 +8,8 @@ class ADSShader : public Shader
 public:
     ADSShader();
 
-    void updateLightOptions(const ShaderLighOptions&) override;
-    void updateSceneOptions(const ShaderSceneOptions&) override;
+    void updateLightOptions(const ShaderLightOptions&) override;
+    void updateCameraOptions(const ShaderCameraOptions&) override;
     void updateObjectOptions(const ShaderObjectOptions&) override;
     void updateSamplers() override;
 };

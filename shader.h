@@ -8,13 +8,13 @@
 
 #include <QOpenGLShaderProgram>
 
-struct ShaderLighOptions
+struct ShaderLightOptions
 {
     QVector3D lightPos;
     QVector3D lightColor;
 };
 
-struct ShaderSceneOptions
+struct ShaderCameraOptions
 {
     QVector3D  cameraPos;
     QMatrix4x4 projection;
@@ -37,8 +37,8 @@ public:
     void bind();
     void release();
 
-    virtual void updateLightOptions(const ShaderLighOptions&) {}
-    virtual void updateSceneOptions(const ShaderSceneOptions&) {}
+    virtual void updateLightOptions(const ShaderLightOptions&) {}
+    virtual void updateCameraOptions(const ShaderCameraOptions&) {}
     virtual void updateObjectOptions(const ShaderObjectOptions&) {}
     virtual void updateSamplers() {}
 

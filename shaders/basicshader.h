@@ -8,8 +8,8 @@ class BasicShader : public Shader
 public:
     BasicShader();
 
-    void updateLightOptions(const ShaderLighOptions&) override;
-    void updateSceneOptions(const ShaderSceneOptions&) override;
+    void updateLightOptions(const ShaderLightOptions&) override;
+    void updateCameraOptions(const ShaderCameraOptions&) override;
     void updateObjectOptions(const ShaderObjectOptions&) override;
 };
 

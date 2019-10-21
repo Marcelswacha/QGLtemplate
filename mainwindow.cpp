@@ -57,4 +57,8 @@
 MainWindow::MainWindow()
 {
   setCentralWidget(new Window(this));
+  showMaximized();
 }
+
+//    QSize minimumSizeHint() const override;
+//    QSize sizeHint() const override;

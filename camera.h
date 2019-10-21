@@ -12,8 +12,9 @@ public:
     explicit Camera(QObject *parent = nullptr);
 
     QMatrix4x4 view();
-    double fov() const { return _fov; }
     QVector3D pos() const { return _pos; }
+    QMatrix4x4 projection(float pixelRatio) const;
+    double fov() const { return _fov; }
 
 public slots:
     void onForwardKeyChanged();

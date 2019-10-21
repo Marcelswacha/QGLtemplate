@@ -10,8 +10,7 @@ HEADERS       = glwidget.h \
     objects/floor.h \
     objects/lightsource.h \
     objects/sphere.h \
-    shape.h \
-    renderinfo.h
+    shape.h
 SOURCES       = glwidget.cpp \
                 main.cpp \
   shader.cpp \

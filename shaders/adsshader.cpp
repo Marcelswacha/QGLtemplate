@@ -9,13 +9,13 @@ ADSShader::ADSShader()
 {
 }
 
-void ADSShader::updateLightOptions(const ShaderLighOptions& lightOptions)
+void ADSShader::updateLightOptions(const ShaderLightOptions& lightOptions)
 {
     _program->setUniformValue("lightColor", lightOptions.lightColor);
     _program->setUniformValue("lightPos", lightOptions.lightPos);
 }
 
-void ADSShader::updateSceneOptions(const ShaderSceneOptions& sceneOptions)
+void ADSShader::updateCameraOptions(const ShaderCameraOptions& sceneOptions)
 {
     _program->setUniformValue("cameraPos", sceneOptions.cameraPos);
     _program->setUniformValue("view", sceneOptions.view);

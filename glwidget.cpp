@@ -39,12 +39,7 @@ GLWidget::~GLWidget()
 
 QSize GLWidget::minimumSizeHint() const
 {
-    return QSize(50, 50);
-}
-
-QSize GLWidget::sizeHint() const
-{
-    return QSize(1440, 900);
+    return QSize(600, 800);
 }
 
 void GLWidget::cleanup()
@@ -94,9 +89,11 @@ void GLWidget::initializeGL()
     // Scene
     // camera
     _camera = new Camera(this);
+    _cameraOptions = new ShaderCameraOptions{_camera->pos(), _camera->projection(devicePixelRatio()), _camera->view() };
 
     // lights
     _lightSource = new LightSource(_lightProgram, nullptr, _cubeShape, QVector3D(3,3,3), QVector3D(1, 1, 1));
+    _lightOptions = new ShaderLightOptions{_lightSource->pos(), _lightSource->color()};
 
     // floor
     _floor = new RenderObject(_objectProgram, _floorTexture, _floorShape, QVector3D(0, -0, 0));
@@ -130,23 +127,14 @@ void GLWidget::paintGL()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _camera->update();
+    updateCamera();
+    updateLights();
 
-    QMatrix4x4 proj;
-    proj.perspective(_camera->fov(), width() / height(), 0.1f, 100.f);
-
-    RenderInfo info;
-    info.cameraPos = _camera->pos();
-    info.lightPos = _lightSource->pos();
-    info.ligthColor = _lightSource->color();
-    info.projectionMatrix = proj;
-    info.viewMatrix = _camera->view();
-
-    _lightSource->draw(info);
-    _floor->draw(info);
+    _lightSource->draw();
+    _floor->draw();
     for (int i = 0; i < _objects.size(); ++i) {
        _objects[i]->update();
-       _objects[i]->draw(info);
+       _objects[i]->draw();
     }
 
     ++frame;
@@ -186,6 +174,40 @@ void GLWidget::generateNewObject()
     qDebug() << x << y << z;
 
     _objects.push_back(new RenderObject(_objectProgram, _footballTexture, _sphereShape, QVector3D(x, y, z)));
+}
+
+void GLWidget::updateCamera()
+{
+    _camera->update();
+    _cameraOptions->cameraPos = _camera->pos();
+    _cameraOptions->projection = _camera->projection(devicePixelRatio());
+    _cameraOptions->view = _camera->view();
+
+    updateCameraOptions(_objectProgram);
+    updateCameraOptions(_lightProgram);
+}
+
+void GLWidget::updateLights()
+{
+    _lightOptions->lightPos = _lightSource->pos();
+    _lightOptions->lightColor = _lightSource->color();
+
+    updateLightOptions(_objectProgram);
+    updateLightOptions(_lightProgram);
+}
+
+void GLWidget::updateCameraOptions(Shader *program)
+{
+    program->bind();
+    program->updateCameraOptions(*_cameraOptions);
+    program->release();
+}
+
+void GLWidget::updateLightOptions(Shader *program)
+{
+    program->bind();
+    program->updateLightOptions(*_lightOptions);
+    program->release();
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent */*event*/)

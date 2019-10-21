@@ -1,8 +1,6 @@
 #ifndef SHAPE_H
 #define SHAPE_H
 
-#include "renderinfo.h"
-
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 
@@ -13,9 +11,6 @@ public:
     virtual ~Shape();
 
     virtual void draw() {}
-
-//    virtual void bind();
-//    virtual void release();
 
 protected:
     QOpenGLVertexArrayObject _vao;

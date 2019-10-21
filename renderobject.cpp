@@ -1,6 +1,6 @@
 #include "renderobject.h"
 
-void RenderObject::draw(const RenderInfo& info)
+void RenderObject::draw()
 {
     if (_texture != nullptr) {
         _texture->bind();
@@ -17,11 +17,11 @@ void RenderObject::draw(const RenderInfo& info)
     ShaderObjectOptions obj{model};
     _program->updateObjectOptions(obj);
 
-    ShaderSceneOptions scene{info.cameraPos, info.projectionMatrix, info.viewMatrix};
-    _program->updateSceneOptions(scene);
+//    ShaderSceneOptions scene{info.cameraPos, info.projectionMatrix, info.viewMatrix};
+//    _program->updateSceneOptions(scene);
 
-    ShaderLighOptions light{info.lightPos, info.ligthColor};
-    _program->updateLightOptions(light);
+//    ShaderLightOptions light{info.lightPos, info.ligthColor};
+//    _program->updateLightOptions(light);
 
     _shape->draw();
 

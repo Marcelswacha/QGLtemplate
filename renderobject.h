@@ -1,7 +1,6 @@
 #ifndef RENDEROBJECT_H
 #define RENDEROBJECT_H
 
-#include "renderinfo.h"
 #include "shader.h"
 #include "shape.h"
 
@@ -22,7 +21,7 @@ public:
 
   virtual ~RenderObject(){}
 
-  virtual void draw(const RenderInfo&);
+  virtual void draw();
   virtual void update();
 
   void setPosition (float x, float y, float z)
@@ -54,7 +53,6 @@ protected:
   QVector3D _scale {1.f, 1.f, 1.f};
 
   void setVector3D(QVector3D& vec, float x, float y, float z);
-
 };
 
 #endif // RENDEROBJECT_H

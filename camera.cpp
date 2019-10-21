@@ -63,6 +63,13 @@ QMatrix4x4 Camera::view()
     return v;
 }
 
+QMatrix4x4 Camera::projection(float pixelRatio) const
+{
+    QMatrix4x4 projection;
+    projection.perspective(_fov, pixelRatio, 0.1f, 100.f);
+    return projection;
+}
+
 void Camera::mousePress(double x, double y)
 {
     _isMousePressed = true;

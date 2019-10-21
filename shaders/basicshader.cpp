@@ -9,12 +9,12 @@ BasicShader::BasicShader()
 {
 }
 
-void BasicShader::updateLightOptions(const ShaderLighOptions& lightOptions)
+void BasicShader::updateLightOptions(const ShaderLightOptions& lightOptions)
 {
     _program->setUniformValue("lightColor", lightOptions.lightColor);
 }
 
-void BasicShader::updateSceneOptions(const ShaderSceneOptions& sceneOptions)
+void BasicShader::updateCameraOptions(const ShaderCameraOptions& sceneOptions)
 {
     _program->setUniformValue("view", sceneOptions.view);
     _program->setUniformValue("projection", sceneOptions.projection);

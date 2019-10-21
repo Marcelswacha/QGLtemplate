@@ -63,6 +63,8 @@ class Camera;
 class LightSource;
 class RenderObject;
 class Shader;
+class ShaderCameraOptions;
+class ShaderLightOptions;
 class Shape;
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
@@ -76,7 +78,6 @@ public:
     ~GLWidget();
 
     QSize minimumSizeHint() const override;
-    QSize sizeHint() const override;
 
 public slots:
     void cleanup();
@@ -99,8 +100,12 @@ private:
     QOpenGLTexture* _cubeTexture;
     QOpenGLTexture* _floorTexture;
     QOpenGLTexture* _footballTexture;
+
     Shader* _objectProgram;
     Shader* _lightProgram;
+    ShaderCameraOptions* _cameraOptions;
+    ShaderLightOptions* _lightOptions;
+
     Shape* _sphereShape;
     Shape* _cubeShape;
     Shape* _floorShape;
@@ -110,9 +115,13 @@ private:
     RenderObject* _floor;
     QVector<RenderObject*> _objects;
 
-    void generateNewObject();
-
     QTimer* _timer;
+
+    void generateNewObject();
+    void updateCamera();
+    void updateLights();
+    void updateCameraOptions(Shader* program);
+    void updateLightOptions(Shader* program);
 };
 
 #endif
