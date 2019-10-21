@@ -14,7 +14,6 @@
 #include <QMouseEvent>
 #include <QTimer>
 
-#include <QOpenGLShaderProgram>
 #include <QOpenGLTexture>
 
 #include <cmath>
@@ -46,13 +45,25 @@ void GLWidget::cleanup()
 {
     makeCurrent();
 
-    delete _lightSource;
+    delete _cubeTexture; _cubeTexture = nullptr;
+    delete _floorTexture; _floorTexture = nullptr;
+    delete _footballTexture; _footballTexture = nullptr;
 
-    delete _objectProgram;
-    _objectProgram = nullptr;
+    delete _objectProgram; _objectProgram = nullptr;
+    delete _lightProgram; _lightProgram = nullptr;
+    delete _cameraOptions; _cameraOptions = nullptr;
+    delete _lightOptions; _lightOptions = nullptr;
 
-    delete _lightProgram;
-    _lightProgram = nullptr;
+    delete _sphereShape; _sphereShape = nullptr;
+    delete _cubeShape; _cubeShape = nullptr;
+    delete _floorShape; _floorShape = nullptr;
+
+    delete _lightSource; _lightSource = nullptr;
+    delete _floor; _floor = nullptr;
+
+    for (int i = 0; i < _objects.size(); ++i) {
+        delete _objects[i]; _objects[i]  = nullptr;
+    }
 
     doneCurrent();
 }
@@ -128,6 +139,7 @@ void GLWidget::initializeGL()
 void GLWidget::paintGL()
 {
     static int frame = 0;
+
     const qreal retinaScale = devicePixelRatio();
     glViewport(0, 0, width() * retinaScale, height() * retinaScale);
 
@@ -177,8 +189,6 @@ void GLWidget::generateNewObject()
     int x = distx(rng);
     int y = disty(rng);
     int z = distz(rng);
-
-    qDebug() << x << y << z;
 
     _objects.push_back(new RenderObject(_objectProgram, _footballTexture, _sphereShape, QVector3D(x, y, z)));
 }

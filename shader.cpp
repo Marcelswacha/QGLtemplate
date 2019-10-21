@@ -2,8 +2,6 @@
 
 #include <stdexcept>
 
-#include <QOpenGLShaderProgram>
-
 Shader::Shader(const char* vsPath,
                const char* fsPath)
 {

@@ -1,19 +1,14 @@
 #include "glwidget.h"
 #include "window.h"
-#include "mainwindow.h"
+
 #include <QSlider>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QKeyEvent>
-#include <QPushButton>
-#include <QDesktopWidget>
-#include <QApplication>
-#include <QMessageBox>
 
 Window::Window(QWidget* parent)
     : QWidget(parent)
 {
-    glWidget = new GLWidget;
+    glWidget = new GLWidget(this);
 
     xSlider = createSlider();
     ySlider = createSlider();
@@ -50,10 +45,10 @@ void Window::onSliderChange()
 
 QSlider *Window::createSlider()
 {
-    QSlider *slider = new QSlider(Qt::Vertical);
+    QSlider *slider = new QSlider(Qt::Vertical, this);
     slider->setRange(0, 255);
     slider->setSingleStep(1);
-    slider->setPageStep(16);
+    slider->setPageStep(32);
     slider->setValue(255);
 
     return slider;

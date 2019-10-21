@@ -1,5 +1,7 @@
 #include "renderobject.h"
 
+#include <QOpenGLTexture>
+
 void RenderObject::draw()
 {
     if (_texture != nullptr) {

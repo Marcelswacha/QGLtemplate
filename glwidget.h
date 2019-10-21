@@ -3,11 +3,10 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
-#include <QMatrix4x4>
-#include <QKeyEvent>
 
-class QTimer;
+class QKeyEvent;
 class QOpenGLTexture;
+class QTimer;
 
 class Camera;
 class LightSource;
@@ -16,8 +15,6 @@ class Shader;
 class ShaderCameraOptions;
 class ShaderLightOptions;
 class Shape;
-
-QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {

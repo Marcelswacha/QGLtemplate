@@ -5,7 +5,8 @@
 #include "shape.h"
 
 #include <QOpenGLFunctions>
-#include <QOpenGLTexture>
+
+class QOpenGLTexture;
 
 class RenderObject : public QOpenGLFunctions
 {
