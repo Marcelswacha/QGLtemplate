@@ -180,11 +180,11 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::generateNewObject()
 {
-    std::random_device dev;
-    std::mt19937 rng(dev());
-    std::uniform_int_distribution<std::mt19937::result_type> distx(-10,10);
-    std::uniform_int_distribution<std::mt19937::result_type> disty(3,20);
-    std::uniform_int_distribution<std::mt19937::result_type> distz(-10, 10);
+    static std::random_device dev;
+    static std::mt19937 rng(dev());
+    std::uniform_int_distribution<> distx(-10,10);
+    std::uniform_int_distribution<> disty(3,20);
+    std::uniform_int_distribution<> distz(-10, 10);
 
     int x = distx(rng);
     int y = disty(rng);
